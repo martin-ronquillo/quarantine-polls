@@ -4,33 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\BaseController as BaseController;
+use App\Http\Resources\User as UserResource;
 
-class AuthController extends Controller
+class AuthController extends BaseController
 {
     public function register(Request $request)
     {
-        // $validatedData = $request->validate([
-        //     'name' => 'required|string|max:255',
-        //     'email' => 'required|string|email|max:255|unique:users',
-        //     'password' => 'required|string|min:8',
-        // ]);
-
-        // $user = User::create([
-        //     'name' => $validatedData['name'],
-        //     'email' => $validatedData['email'],
-        //     'password' => Hash::make($validatedData['password']),
-        // ]);
-
-        // $token = $user->createToken('auth_token')->plainTextToken;
-
-        // return response()->json([
-        //     'access_token' => $token,
-        //     'token_type' => 'Bearer',
-        // ]);
-
         $request->validate([
             'ci' => 'required|digits:10|unique:users,ci',
             'name' => ['required', 'string', 'max:25'],
@@ -47,68 +28,47 @@ class AuthController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-        // $user->save();
-
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Successfully created user!',
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ], 201);
+        // return response()->json([
+        //     'access_token' => $token,
+        //     'token_type' => 'Bearer',
+        // ]);
+        return $this->sendResponse($user, $token, 'User register successfully.');
     }
 
     public function login(Request $request)
     {
-        // if (!Auth::attempt($request->only('email', 'password'))) {
-        //     return response()->json([
-        //         'message' => 'Invalid login details'
-        //     ], 401);
-        // }
-
-        // $user = User::where('email', $request['email'])->firstOrFail();
-
-        // $token = $user->createToken('auth_token')->plainTextToken;
-
-        // return response()->json([
-        //         'access_token' => $token,
-        //         'token_type' => 'Bearer',
-        // ]);
-
         $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string',
-            'remember_me' => 'boolean'
+            // 'remember_me' => 'boolean'
         ]);
 
-        $credentials = request(['email', 'password']);
-
-        if(!Auth::attempt($credentials))
+        if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
-                'message' => 'Unauthorized'
-            ], 401
-        );
-        
-        $user = $request->user();
-        $tokenResult = $user->createToken('Personal Access Token');
-        $token = $tokenResult->token;
+                'message' => 'Invalid login details'
+            ], 401);
+        }
 
-        if ($request->remember_me)
-            $token->expires_at = Carbon::now()->addWeeks(1);
-
-        $token->save();
+        $user = User::where('email', $request['email'])->firstOrFail();
         
-        return response()->json([
-            'access_token' => $tokenResult->accessToken,
-            'token_type' => 'Bearer',
-            'expires_at' => Carbon::parse(
-                $tokenResult->token->expires_at
-            )->toDateTimeString()
-        ]);
+        $token = $user->createToken($user->email)->plainTextToken;
+
+        $user->api_token = $token;
+
+        return $this->sendResponse($user, 'User login successfully.');
     }
 
-    public function me(Request $request)
+    public function logout(Request $id)
     {
-        return $request->user();
+        Auth::user()->tokens()->delete();
+
+        // $user = User::find(1);
+        // $user->tokens()->delete();
+
+        return response()->json([
+            'message' => 'Tokens Revoked'
+        ]);
     }
 }
