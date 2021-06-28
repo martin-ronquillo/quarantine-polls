@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Poll;
 use Illuminate\Http\Request;
+use App\Http\Resources\Poll as PollResource;
+use App\Http\Controllers\BaseController as BaseController;
+use App\Http\Requests\StorePoll;
+use App\Models\Answer;
 
-class PollController extends Controller
+class PollController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -33,9 +37,11 @@ class PollController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePoll $request)
     {
-        //
+        $poll = Poll::create($request->all());
+
+        return $this->sendResponse($poll);
     }
 
     /**
@@ -44,9 +50,29 @@ class PollController extends Controller
      * @param  \App\Models\Poll  $poll
      * @return \Illuminate\Http\Response
      */
-    public function show(Poll $poll)
+    public function show($id)
     {
-        //
+        $poll = Poll::findOrFail($id);
+        
+        return $this->sendResponse($poll, $poll->users, $poll->questions);
+        
+        // return $this->sendResponse(new PollResource($poll::with(['users', 'questions'])->first()));
+    }
+
+    public function pollsPerUser($id)
+    {
+        $answers = Answer::where('user_id', $id)->get();
+
+        $polls = [];
+
+        foreach (@$answers as $item) {
+            $polls[] = $item->questions->polls;
+        }
+
+        //array_unique elimina los datos duplicados del array
+        //array_values resetea los keys de los elementos en el array
+        @$uniPoll = array_values(array_unique($polls));
+        return $this->sendResponse($uniPoll);
     }
 
     /**

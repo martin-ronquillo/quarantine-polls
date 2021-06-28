@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Poll as PollResource;
 
 class User extends JsonResource
 {
@@ -14,15 +15,15 @@ class User extends JsonResource
      */
     public function toArray($request)
     {
-        // return parent::toArray($request);
         return [
             'id'          =>  $this->id,
             'ci'          =>  $this->ci,
             'name'        =>  $this->name,
             'last_name'   =>  $this->las_name,
             'email'       =>  $this->email,
-            'api_token'   =>  $this->api_token,
-            'password'    =>  $this->password,
+            'polls'       =>  PollResource::collection($this->polls),
+            // 'api_token'   =>  $this->api_token,
+            // 'password'    =>  $this->password,
         ];
     }
 }

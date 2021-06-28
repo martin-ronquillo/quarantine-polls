@@ -21,7 +21,7 @@ class CreateOptionsTable extends Migration
         });
 
         //Relaciones
-
+        
         //Foreign key en polls
         Schema::table('polls', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users')

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreQuestion;
+use App\Models\Poll;
 use App\Models\Question;
 use Illuminate\Http\Request;
 
-class QuestionController extends Controller
+class QuestionController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -33,9 +35,14 @@ class QuestionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreQuestion $request)
     {
-        //
+        $poll = Poll::findOrFail($request->poll_id);
+
+        // if($poll->)
+        $questions = Question::create($request->all());
+
+        return $this->sendResponse($questions);
     }
 
     /**
@@ -44,9 +51,11 @@ class QuestionController extends Controller
      * @param  \App\Models\Question  $question
      * @return \Illuminate\Http\Response
      */
-    public function show(Question $question)
+    public function show($id)
     {
-        //
+        $question = Question::findOrFail($id);
+
+        return $this->sendResponse($question, $question->polls, $question->options);
     }
 
     /**

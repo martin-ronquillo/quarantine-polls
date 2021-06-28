@@ -6,20 +6,13 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BaseController as BaseController;
+use App\Http\Requests\StoreUser;
 use App\Http\Resources\User as UserResource;
 
 class AuthController extends BaseController
 {
-    public function register(Request $request)
+    public function register(StoreUser $request)
     {
-        $request->validate([
-            'ci' => 'required|digits:10|unique:users,ci',
-            'name' => ['required', 'string', 'max:25'],
-            'last_name' => 'required', 'string', 'max:25',
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:3', 'confirmed'],
-        ]);
-
         $user = User::create([
             'ci' => $request->ci,
             'name' => $request->name,
@@ -34,7 +27,7 @@ class AuthController extends BaseController
         //     'access_token' => $token,
         //     'token_type' => 'Bearer',
         // ]);
-        return $this->sendResponse($user, $token, 'User register successfully.');
+        return $this->sendResponse($user);
     }
 
     public function login(Request $request)
@@ -46,9 +39,10 @@ class AuthController extends BaseController
         ]);
 
         if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json([
-                'message' => 'Invalid login details'
-            ], 401);
+            return $this->sendError('Invalid login details', 401);
+            // return response()->json([
+            //     'message' => 'Invalid login details'
+            // ], 401);
         }
 
         $user = User::where('email', $request['email'])->firstOrFail();
@@ -57,7 +51,7 @@ class AuthController extends BaseController
 
         $user->api_token = $token;
 
-        return $this->sendResponse($user, 'User login successfully.');
+        return $this->sendResponse($user);
     }
 
     public function logout(Request $id)

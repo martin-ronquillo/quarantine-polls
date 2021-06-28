@@ -18,7 +18,7 @@ class CreateQuestionsTable extends Migration
             $table->unsignedBigInteger('poll_id')->index();
             $table->string('question');
             $table->enum('type', ['Integer', 'Float', 'Text', 'Check', 'Multi Checker', 'Bool']);
-            $table->enum('required', ['Yes', 'No']);
+            $table->boolean('required');
             $table->timestamps();
         });
     }

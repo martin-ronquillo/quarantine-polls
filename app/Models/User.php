@@ -22,7 +22,6 @@ class User extends Authenticatable
         'name', 
         'last_name', 
         'email', 
-        // 'api_token', 
         'password',
     ];
 
@@ -35,6 +34,9 @@ class User extends Authenticatable
         'password',
         'remember_token',
         // 'api_token',
+        'email_verified_at',
+        'created_at',
+        'updated_at'
     ];
 
     /**

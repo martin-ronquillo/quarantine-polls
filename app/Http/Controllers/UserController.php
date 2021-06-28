@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Resources\User as UserResource;
 
-class UserController extends Controller
+class UserController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +19,8 @@ class UserController extends Controller
         // if(!$user->tokenCan('categories')){
         //     abort(401, 'Unautorized');
         // }
-        return User::all();
+        $user = User::all();
+        return $this->sendResponse(UserResource::collection($user));
     }
 
     /**

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreOption;
 use App\Models\Option;
 use Illuminate\Http\Request;
 
-class OptionController extends Controller
+class OptionController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -33,9 +34,11 @@ class OptionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreOption $request)
     {
-        //
+        $option = Option::create($request->all());
+
+        return $this->sendResponse($option, $option->questions);
     }
 
     /**
@@ -44,9 +47,11 @@ class OptionController extends Controller
      * @param  \App\Models\Option  $option
      * @return \Illuminate\Http\Response
      */
-    public function show(Option $option)
+    public function show($id)
     {
-        //
+        $option = Option::findOrFail($id);
+
+        return $this->sendResponse($option, $option->questions);
     }
 
     /**

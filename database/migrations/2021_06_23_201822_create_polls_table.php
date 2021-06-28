@@ -16,7 +16,10 @@ class CreatePollsTable extends Migration
         Schema::create('polls', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->index();
-            $table->integer('samplings');
+            $table->string('poll_reason');
+            $table->string('poll_subtitle')->nullable();
+            $table->integer('expected_samplings')->nullable();
+            $table->integer('total_samplings')->nullable();
             $table->timestamps();
         });
     }

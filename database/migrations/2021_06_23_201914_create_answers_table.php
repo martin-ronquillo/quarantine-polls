@@ -18,7 +18,7 @@ class CreateAnswersTable extends Migration
             $table->unsignedBigInteger('user_id')->index();
             $table->unsignedBigInteger('question_id')->index();
             $table->text('answer')->nullable();
-            $table->string('coordinates')->nullable();
+            $table->string('long_lat')->nullable();
             $table->timestamps();
         });
     }
