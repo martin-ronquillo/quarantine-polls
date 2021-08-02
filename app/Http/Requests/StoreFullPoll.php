@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorePoll extends FormRequest
+class StoreFullPoll extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +25,11 @@ class StorePoll extends FormRequest
     {
         return [
             "user_id" => "required|exists:users,id",
-            "poll_reason" => "required|string|max:35",
-            "poll_subtitle" => "nullable|string|max:35",
-            "expected_samplings" => "required|digits_between:0,7",
-            "active" => "required|boolean"
+            "samplings" => "digits_between:0,7",
+            // "poll_id" => "required|exists:polls,id",
+            "question" => "required|string|max:255",
+            "type"  =>  "required|in:Bool,Check,Float,Integer,Multi Checker,Text",
+            "required"  =>  "required|boolean"
         ];
     }
 }

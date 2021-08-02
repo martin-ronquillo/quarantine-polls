@@ -15,8 +15,13 @@ class Poll extends Model
      * @var array
      */
     protected $fillable = [
+        'id',
         'user_id', 
-        'samplings',
+        'poll_reason',
+        'poll_subtitle',
+        'expected_samplings',
+        'total_samplings',
+        'active'
     ];
 
     /**

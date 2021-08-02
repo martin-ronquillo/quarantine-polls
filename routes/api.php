@@ -24,26 +24,28 @@ use App\Models\User;
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return User::first($request->user());
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return User::first($request->user());
+// });
 
 Route::middleware('auth:sanctum')->group( function () {
-
-    Route::get('user/index', [UserController::class, 'index']);
+    
+    Route::get('user/is-logged', [UserController::class, 'isLogg']);
     Route::post('logout', [AuthController::class, 'logout']);
 
     Route::get('polls/{id}', [PollController::class, 'show']);
-    Route::get('polls/all-per-user/{id}', [PollController::class, 'pollsPerUser']);
-    Route::post('polls/store', [PollController::class, 'store']);
+    Route::get('polls/search/{query}', [PollController::class, 'searchPoll']);
+    //Regresa las encuestas en las que el usuario ha participado
+    Route::get('polls/user/{id}', [PollController::class, 'pollsPerUser']);
+    //regresa las encuestas que el usuario ha creado
+    Route::get('user/{id}/polls', [UserController::class, 'pollsUser']);
+    Route::post('polls', [PollController::class, 'store']);
     
     Route::get('questions/{id}', [QuestionController::class, 'show']);
-    Route::post('questions/store', [QuestionController::class, 'store']);
+    //Regresa las preguntas de una encuesta para responderla
+    Route::get('polls/{id}/questions', [PollController::class, 'showPerPoll']);
 
-    Route::get('options/{id}', [OptionController::class, 'show']);
-    Route::post('options/store', [OptionController::class, 'store']);
+    Route::apiResource('questions', 'QuestionController')->only('store', 'update');
 
-    // Route::get('options/{id}', [OptionController::class, 'show']);
-    // Route::post('options/store', [OptionController::class, 'store']);
-    
+    Route::apiResource('options', 'OptionController')->only('show', 'store');
 });

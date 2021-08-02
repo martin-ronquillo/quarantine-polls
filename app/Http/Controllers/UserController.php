@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\User as UserResource;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends BaseController
 {
@@ -44,6 +45,17 @@ class UserController extends BaseController
         //
     }
 
+    //Comprueba si el token del usuario existe en la app
+    public function isLogg()
+    {
+        if(Auth::user()->currentAccessToken()) {
+            return $this->sendResponse('ok');
+        } 
+        else {
+            return $this->sendError('Error al iniciar sesion', 403);
+        }
+    }
+
     /**
      * Display the specified resource.
      *
@@ -53,6 +65,15 @@ class UserController extends BaseController
     public function show($id)
     {
         //
+    }
+
+    //Regresa las encuestas creadas por el usuario
+    public function pollsUser($id)
+    {
+        $user = User::findOrFail($id);
+        
+        return $this->sendResponse($user->polls);
+        // return $this->sendResponse(new PollResource($poll::with(['users', 'questions'])->first()));
     }
 
     /**

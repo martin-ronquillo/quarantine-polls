@@ -6,6 +6,7 @@ use App\Http\Requests\StoreQuestion;
 use App\Models\Poll;
 use App\Models\Question;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class QuestionController extends BaseController
 {
@@ -29,6 +30,12 @@ class QuestionController extends BaseController
         //
     }
 
+    function containsOnlyNull($array) {
+        return array_reduce($array, function (bool $boolean, $value) {  
+            return !$boolean ? $boolean : $value !== null; 
+        }, true);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -37,12 +44,29 @@ class QuestionController extends BaseController
      */
     public function store(StoreQuestion $request)
     {
-        $poll = Poll::findOrFail($request->poll_id);
-
-        // if($poll->)
-        $questions = Question::create($request->all());
-
-        return $this->sendResponse($questions);
+        // dd(array_search(null,$request->options,true));
+        if($request->type == 'Multi Checker') {
+            if($this->containsOnlyNull($request->options) && count($request->options) >= 2) {
+                // dd($request->options);
+                $question = Question::create([
+                    'poll_id' => $request->poll_id, 
+                    'question' => $request->question,
+                    'type' => $request->type,
+                    'required' => $request->required,
+                ]);
+                return $this->sendResponse($question);
+            }
+        } elseif($request->type != 'Multi Checker') {
+            $question = Question::create([
+                'poll_id' => $request->poll_id, 
+                'question' => $request->question,
+                'type' => $request->type,
+                'required' => $request->required,
+            ]);
+            return $this->sendResponse($question);
+        }
+        
+        return $this->sendError('No se pudo crear la pregunta', Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -76,9 +100,17 @@ class QuestionController extends BaseController
      * @param  \App\Models\Question  $question
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Question $question)
+    public function update(StoreQuestion $request, $id)
     {
-        //
+        $question = Question::findOrFail($id);
+
+        $question->question = $request->question;
+        $question->type = $request->type;
+        $question->required = $request->required;
+
+        $question->save();
+        
+        return $this->sendResponse($question);
     }
 
     /**

@@ -27,6 +27,7 @@ class StoreQuestion extends FormRequest
             "poll_id" => "required|exists:polls,id",
             "question" => "required|string|max:255",
             "type"  =>  "required|in:Bool,Check,Float,Integer,Multi Checker,Text",
+            "options" => "nullable",
             "required"  =>  "required|boolean"
         ];
     }

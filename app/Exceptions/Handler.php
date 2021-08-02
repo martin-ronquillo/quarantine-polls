@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
+use Dotenv\Exception\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Response;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -34,8 +36,15 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        // $this->reportable(function (Throwable $e) {
+        //     //
+        // });
+        $this->renderable(function(Throwable $e, $request){
+            if($request->is('api/*')){
+                if($e instanceof ValidationException){
+                    return response()->json(['error' => $e->validators->errors()->getMessages()], Response::HTTP_BAD_REQUEST);
+                }
+            }
         });
     }
 }

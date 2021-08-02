@@ -20,6 +20,7 @@ class CreatePollsTable extends Migration
             $table->string('poll_subtitle')->nullable();
             $table->integer('expected_samplings')->nullable();
             $table->integer('total_samplings')->nullable();
+            $table->boolean('active');
             $table->timestamps();
         });
     }

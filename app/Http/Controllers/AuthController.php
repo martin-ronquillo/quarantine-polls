@@ -40,16 +40,13 @@ class AuthController extends BaseController
 
         if (!Auth::attempt($request->only('email', 'password'))) {
             return $this->sendError('Invalid login details', 401);
-            // return response()->json([
-            //     'message' => 'Invalid login details'
-            // ], 401);
         }
 
         $user = User::where('email', $request['email'])->firstOrFail();
         
-        $token = $user->createToken($user->email)->plainTextToken;
+        // $token = $user->createToken($user->email)->plainTextToken;
 
-        $user->api_token = $token;
+        // $user->api_token = $token;
 
         return $this->sendResponse($user);
     }

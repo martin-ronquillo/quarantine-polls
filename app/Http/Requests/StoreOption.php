@@ -25,7 +25,7 @@ class StoreOption extends FormRequest
     {
         return [
             "question_id" => "required|exists:questions,id",
-            "option" => "required|string|max:255",
+            "options" => "required",
         ];
     }
 }

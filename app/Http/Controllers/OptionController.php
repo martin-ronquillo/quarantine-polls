@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreOption;
 use App\Models\Option;
+use App\Models\Question;
 use Illuminate\Http\Request;
 
 class OptionController extends BaseController
@@ -36,9 +37,14 @@ class OptionController extends BaseController
      */
     public function store(StoreOption $request)
     {
-        $option = Option::create($request->all());
+        foreach($request->options as $option) {
+            Option::create([
+                'question_id' => $request->question_id,
+                'option' => $option,
+            ]);
+        }
 
-        return $this->sendResponse($option, $option->questions);
+        return $this->sendResponse(Option::where('question_id', $request->question_id)->get());
     }
 
     /**
@@ -49,9 +55,10 @@ class OptionController extends BaseController
      */
     public function show($id)
     {
-        $option = Option::findOrFail($id);
+        return $this->sendResponse(Option::where('question_id', $id)->get());
+        // $option = Option::findOrFail($id);
 
-        return $this->sendResponse($option, $option->questions);
+        // return $this->sendResponse($option, $option->questions);
     }
 
     /**
